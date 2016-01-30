@@ -25,9 +25,21 @@ public class PercolationStats {
             p.open(i, j);
         }
 
-        System.out.println("mean = " + mean());
-        System.out.println("stddev = " + stddev());
-        System.out.println("95% confidence interval = " + confidenceLo() + ", " + confidenceHi());
+        int opened = 0;
+        for (int i = 1; i < N; i++) {
+            for (int j = 1; j < N; j++) {
+                if (p.isOpen(i, j)) {
+                    opened++;
+                }
+            }
+        }
+
+        float mean = (float)opened / (float)(N*N);
+        System.out.println("Mean: " + mean);
+
+        //System.out.println("mean = " + mean());
+        //System.out.println("stddev = " + stddev());
+        //System.out.println("95% confidence interval = " + confidenceLo() + ", " + confidenceHi());
     }
 
     public double mean() {

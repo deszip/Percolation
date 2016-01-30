@@ -79,7 +79,7 @@ public class Percolation {
         // Mark site as opened
         opened[i-1][j-1] = true;
 
-        System.out.println("Opened: " + currentIndex + "(" + i + ":" + j + ")");
+        //System.out.println("Opened: " + currentIndex + "(" + i + ":" + j + ")");
     }
 
     public boolean isOpen(int i, int j) {
