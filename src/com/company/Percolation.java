@@ -29,65 +29,40 @@ public class Percolation {
             throw new IndexOutOfBoundsException();
         }
 
-        //System.out.println("Open: " + i + " - " + j);
-
-        // Skip if opened
         if (isOpen(i, j)) {
             return;
         }
 
-        int currentIndex = (i * fieldSize) - (fieldSize - j);
-
-        //System.out.println("Index: " + currentIndex);
-
-        // Connect to virtual sites
+        int currentIndex = xyTo1D(i, j);
         if (i == 1) {
             qu.union(currentIndex, 0);
         } else if (i == fieldSize) {
             qu.union(currentIndex, fieldSize*fieldSize + 1);
         }
 
-        // Check neighbours
-        // Top
         if (i > 1 && isOpen(i - 1, j)) {
-            int topIndex = ((i - 1) * fieldSize) - (fieldSize - j);
-            //System.out.println("\tTop: " + topIndex);
-            qu.union(currentIndex, topIndex);
+            qu.union(currentIndex, xyTo1D(i - 1, j));
         }
 
-        // Left
         if (j > 1 && isOpen(i, j - 1)) {
-            int leftIndex = (i * fieldSize) - (fieldSize - j - 1);
-            //System.out.println("\tTop: " + leftIndex);
-            qu.union(currentIndex, leftIndex);
+            qu.union(currentIndex, xyTo1D(i, j - 1));
         }
 
-        // Bottom
         if (i < fieldSize && isOpen(i + 1, j)) {
-            int bottomIndex = ((i + 1) * fieldSize) - (fieldSize - j);
-            //System.out.println("\tTop: " + bottomIndex);
-            qu.union(currentIndex, bottomIndex);
+            qu.union(currentIndex, xyTo1D(i + 1, j));
         }
 
-        // Right
         if (j < fieldSize && isOpen(i, j + 1)) {
-            int rightIndex = (i * fieldSize) - (fieldSize - j + 1);
-            //System.out.println("\tTop: " + rightIndex);
-            qu.union(currentIndex, rightIndex);
+            qu.union(currentIndex, xyTo1D(i, j + 1));
         }
 
-        // Mark site as opened
         opened[i-1][j-1] = true;
-
-        //System.out.println("Opened: " + currentIndex + "(" + i + ":" + j + ")");
     }
 
     public boolean isOpen(int i, int j) {
         if (i > fieldSize || i < 1 || j > fieldSize || j < 1) {
             throw new java.lang.IndexOutOfBoundsException();
         }
-
-        //System.out.println(i + ":" + j + " -> " + opened[i-1][j-1]);
 
         return opened[i-1][j-1];
     }
@@ -103,6 +78,10 @@ public class Percolation {
 
     public boolean percolates() {
         return qu.connected(0, fieldSize * fieldSize + 1);
+    }
+
+    private int xyTo1D(int x, int y) {
+        return (x * fieldSize) - (fieldSize - y);
     }
 
 }

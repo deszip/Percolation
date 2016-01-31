@@ -5,70 +5,76 @@ import edu.princeton.cs.algs4.StdStats;
 
 public class PercolationStats {
 
+    private int fieldSize;
+    private int iterationsCount;
+    private double openedSites[];
+
     public PercolationStats(int N, int T) {
         if (N <= 0 || T <= 0) {
             throw new java.lang.IllegalArgumentException();
         }
 
-        Percolation p = new Percolation(N);
+        fieldSize = N;
+        iterationsCount = T;
+        openedSites = new double[T];
 
-        while (!p.percolates()) {
-            // generate random pair from 0 to N until it's closed
-            int i, j;
+        for (int i = 0; i < T; i++) {
+            Percolation p = new Percolation(N);
 
-            do {
-                i = StdRandom.uniform(1, N+1);
-                j = StdRandom.uniform(1, N+1);
-            } while (p.isOpen(i, j));
+            while (!p.percolates()) {
+                int row, column;
+                do {
+                    row = StdRandom.uniform(1, N + 1);
+                    column = StdRandom.uniform(1, N + 1);
+                } while (p.isOpen(row, column));
 
-            // open site with generated indexes
-            p.open(i, j);
+                p.open(row, column);
+            }
+
+            openedSites[i] = openedRate(p);
+        }
+    }
+
+    public double mean() {
+        return StdStats.mean(openedSites);
+    }
+
+    public double stddev() {
+        return StdStats.stddev(openedSites);
+    }
+
+    public double confidenceLo() {
+        return mean() - (1.96 * stddev()) / java.lang.Math.sqrt(iterationsCount);
+    }
+
+    public double confidenceHi() {
+        return mean() + (1.96 * stddev()) / java.lang.Math.sqrt(iterationsCount);
+    }
+
+    public static void main(String[] args) {
+        if (args.length != 2) {
+            throw new java.lang.IllegalArgumentException();
         }
 
+        Integer N = Integer.parseInt(args[0]);
+        Integer T = Integer.parseInt(args[1]);
+        PercolationStats ps = new PercolationStats(N, T);
+
+        System.out.println("mean                    = " + ps.mean());
+        System.out.println("stddev                  = " + ps.stddev());
+        System.out.println("95% confidence interval = " + ps.confidenceLo() + ", " + ps.confidenceHi());
+    }
+
+    private double openedRate(Percolation p) {
         int opened = 0;
-        for (int i = 1; i < N; i++) {
-            for (int j = 1; j < N; j++) {
-                if (p.isOpen(i, j)) {
+        for (int row = 1; row <= fieldSize; row++) {
+            for (int column = 1; column <= fieldSize; column++) {
+                if (p.isOpen(row, column)) {
                     opened++;
                 }
             }
         }
 
-        float mean = (float)opened / (float)(N*N);
-        System.out.println("Mean: " + mean);
-
-        //System.out.println("mean = " + mean());
-        //System.out.println("stddev = " + stddev());
-        //System.out.println("95% confidence interval = " + confidenceLo() + ", " + confidenceHi());
-    }
-
-    public double mean() {
-        return 0.0;
-    }
-
-    public double stddev() {
-        return 0.0;
-    }
-
-    public double confidenceLo() {
-        return 0.0;
-    }
-
-    public double confidenceHi() {
-        return 0.0;
-    }
-
-    public static void main(String[] args) {
-        // Arguments checks
-        if (args.length != 2) {
-            throw new java.lang.IllegalArgumentException();
-        }
-
-        // Create PercolationStats
-        Integer N = Integer.parseInt(args[0]);
-        Integer T = Integer.parseInt(args[1]);
-        PercolationStats ps = new PercolationStats(N, T);
-
-
+        return (double)opened / (double)(fieldSize * fieldSize);
     }
 }
